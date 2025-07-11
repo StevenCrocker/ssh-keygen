@@ -1,79 +1,87 @@
-# 🗝️ sftp-ssh-generator
+# 🗝️ ssh-keygen
 
-[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/i/scrocker.sftp-ssh-generator)](https://marketplace.visualstudio.com/items?itemName=scrocker.sftp-ssh-generator)
-[![Version](https://img.shields.io/visual-studio-marketplace/v/scrocker.sftp-ssh-generator)](https://marketplace.visualstudio.com/items?itemName=scrocker.sftp-ssh-generator)
-[![Rating](https://img.shields.io/visual-studio-marketplace/stars/scrocker.sftp-ssh-generator)](https://marketplace.visualstudio.com/items?itemName=scrocker.sftp-ssh-generator)
-[![License](https://img.shields.io/github/license/Stevencrocker/sftp-ssh-generator)](https://github.com/Stevencrocker/sftp-ssh-generator/blob/main/LICENSE)
+[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/install/scrocker.ssh-keygen)](https://marketplace.visualstudio.com/items?itemName=scrocker.ssh-keygen)
+[![Version](https://img.shields.io/visual-studio-marketplace/v/scrocker.ssh-keygen)](https://marketplace.visualstudio.com/items?itemName=scrocker.ssh-keygen)
+[![Rating](https://img.shields.io/visual-studio-marketplace/stars/scrocker.ssh-keygen)](https://marketplace.visualstudio.com/items?itemName=scrocker.ssh-keygen)
+[![License](https://img.shields.io/github/license/Stevencrocker/ssh-keygen)](https://github.com/Stevencrocker/ssh-keygen/blob/main/LICENSE)
 [![Buy Me a Coffee](https://img.shields.io/badge/☕-Buy%20Me%20a%20Coffee-orange)](https://buymeacoffee.com/scrocker)
 
 ---
 
-A simple, friendly VS Code extension to generate SSH key pairs in your workspace's `.vscode` folder and optionally create/update your `sftp.json` config for you.
+A simple, friendly VS Code extension to generate SSH key pairs in your workspace's `.vscode` folder.
 
-✨ Perfect for easily setting up VS Code's [SFTP extension](https://marketplace.visualstudio.com/items?itemName=Natizyskunk.sftp).
+✨ Compatible with VS Code's [SFTP extension by Natizyskunk](https://marketplace.visualstudio.com/items?itemName=Natizyskunk.sftp) (generates proper sftp.json format utilizing your generated SSH Private Key).
 
 ---
 
 ## 🚀 Features
 
-✅ Generate **ed25519** (recommended) or **RSA** (2048/4096) keys  
-✅ Saves keys in `.vscode/{hostname}-{keytype}-private/public`  
-✅ Optional automatic `sftp.json` generation/update  
-✅ Only prompts for missing info  
-✅ Option to copy the public key to your clipboard immediately  
-✅ User-friendly and flexible for any SFTP workflow
+- ✅ **Three intelligent commands** to fit any workflow
+- ✅ Generate **ed25519** (recommended) or **RSA** (2048/4096) keys
+- ✅ **Consistent naming**: `{hostname}-{username}-{keytype}` format for organization
+- ✅ **Smart validation** that skips key generation if valid keys already exist
+- ✅ Automatic `sftp.json` generation/update when needed
+- ✅ Only prompts for missing information to streamline the process
+- ✅ Option to copy the public key to your clipboard for immediate use
+- ✅ User-friendly and flexible for any SFTP workflow
+- ✅ Cross-platform support with helpful installation guidance
 
 ---
 
 ## 🌴 Installation
 
-Install from the [Visual Studio Code Marketplace](https://marketplace.visualstudio.com/items?itemName=scrocker.sftp-ssh-generator).
+Install from the [Visual Studio Code Marketplace](https://marketplace.visualstudio.com/items?itemName=scrocker.ssh-keygen).
 
 Or search in VS Code:
 
 ```
-SFTP SSH Generator by scrocker
+SSH Key Generator by scrocker
 ```
 
 ---
 
 ## 🅥 Usage
 
-1. Open the \*_Command Palette_) (`Ctrl+Shift+P` or `Cmd+Shift+P`).
-2. Run:
+1. Open the **Command Palette** (`Ctrl+Shift+P` or `Cmd+Shift+P`).
+2. Choose one of three commands based on your needs:
+
+### 🔧 **Complete Setup** (Recommended for new projects)
 
 ```
-> SFTP SSH Generator: Generate SSH Key and (Optional) sftp.json
+> SSHKEYGEN: Generate SSH Key Pair & Create or Update SFTP Config
 ```
-
-3. Follow the prompts:
 
 - Choose key type (ed25519, RSA 2048, RSA 4096)
-- Choose whether to create/update sftp.json
-- Enter only required fields (host, username, optional remote path)
-- Optionally copy your public key to clipboard immediately
+- Prompts for host, username, and optional remote path (only if not already in existing sftp.json)
+- Automatically generates keys AND creates or updates sftp.json
+- Perfect for setting up a new SFTP connection
 
-`𝐠.Vscode/{hostname}-{keytype}-private
-
-```
+### 🗝️ **Keys Only** (For flexibility)
 
 ```
+> SSHKEYGEN: Generate SSH Key Pair Only
+```
 
-.vscode/{hostname}-{keytype}-public
+- Choose key type (ed25519, RSA 2048, RSA 4096)
+- Enter hostname and username for smart naming
+- Generates keys without touching sftp.json
+- Great for Git, other servers, or manual SFTP setup
 
-````
+### ⚙️ **Config Only** (Smart Discovery)
 
-❤ Your sftp.json will be updated with:
+```
+> SSHKEYGEN: Create or Update SFTP Config Only
+```
 
-```{
-  "host": "your-host",
-  "username": "your-user",
-  "remotePath": "",
-  "privateKeyPath": "./.vscode/your-key",
-  "protocol": "sftp",
-  "port": 22
-}
-````
+- **Finds existing SSH keys** in `.vscode` folder that use the `{hostname}-{username}-{keytype}` format
+- **Reads hostname and username** from key filenames automatically
+- **Validates key pairs** and shows status in selection list
+- **Only prompts for missing information** (usually just remote path)
+- Perfect when you already have keys or want to reconfigure
+
+3. Follow the prompts and optionally copy your public key to clipboard when done!
+
+**Note:** This extension generates keys locally and updates configuration files - it never attempts to connect to remote servers.
 
 ---
 
@@ -104,4 +112,4 @@ Issues and pull requests are welcome!
 
 ## 💑 Related
 
-- [VS Code SFTP Extension](https://marketplace.visualstudio.com/items?itemName=Natizyskunk.sftp)
+- [SFTP Extension by Natizyskunk](https://marketplace.visualstudio.com/items?itemName=Natizyskunk.sftp)

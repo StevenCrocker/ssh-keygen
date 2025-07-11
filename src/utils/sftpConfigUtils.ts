@@ -19,7 +19,14 @@ export function readSftpConfig(sftpConfigPath: string): { configs: SftpConfig[];
 	}
 
 	try {
-		const parsedConfig = JSON.parse(fs.readFileSync(sftpConfigPath, 'utf-8'));
+		const fileContent = fs.readFileSync(sftpConfigPath, 'utf-8').trim();
+
+		// Handle empty or whitespace-only files
+		if (!fileContent) {
+			return { configs: [], isArray: true };
+		}
+
+		const parsedConfig = JSON.parse(fileContent);
 
 		if (Array.isArray(parsedConfig)) {
 			return { configs: parsedConfig, isArray: true };
@@ -27,7 +34,8 @@ export function readSftpConfig(sftpConfigPath: string): { configs: SftpConfig[];
 			return { configs: [parsedConfig], isArray: false };
 		}
 	} catch (error) {
-		throw new Error('Invalid sftp.json format');
+		// If JSON parsing fails, treat it like a missing file and start fresh
+		return { configs: [], isArray: true };
 	}
 }
 

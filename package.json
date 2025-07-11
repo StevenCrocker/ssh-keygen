@@ -1,10 +1,17 @@
 {
-	"name": "sftp-ssh-generator",
-	"displayName": "SFTP SSH Generator",
-	"description": "Automates the process of creating a new SSH Key pair, and creates or updates sftp.json for the SFTP Extension.",
+	"name": "ssh-keygen",
+	"displayName": "SSH Key Generator (+ SFTP Config)",
+	"description": "Automates the process of creating SSH Key pairs and optionally creates or updates sftp.json for the SFTP Extension.",
+	"publisher": "scrocker",
 	"version": "0.0.1",
+	"icon": "icon.png",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/StevenCrocker/ssh-keygen.git"
+	},
+	"license": "MIT",
 	"engines": {
-		"vscode": "^1.102.0"
+		"vscode": "^1.101.0"
 	},
 	"categories": [
 		"Other"
@@ -15,7 +22,15 @@
 		"commands": [
 			{
 				"command": "extension.generateSshKeyAndConfig",
-				"title": "SFTP SSH Generator: Generate SSH Key Pair"
+				"title": "SSHKEYGEN: Generate SSH Key Pair & Create or Update SFTP Config"
+			},
+			{
+				"command": "extension.generateSshKeyOnly",
+				"title": "SSHKEYGEN: Generate SSH Key Pair Only"
+			},
+			{
+				"command": "extension.updateSftpConfigOnly",
+				"title": "SSHKEYGEN: Create or Update SFTP Config Only"
 			}
 		]
 	},
