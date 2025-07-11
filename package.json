@@ -3,7 +3,7 @@
 	"displayName": "SSH Key Generator (+ SFTP Config)",
 	"description": "Automates the process of creating SSH Key pairs and optionally creates or updates sftp.json for the SFTP Extension.",
 	"publisher": "scrocker",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"icon": "icon.png",
 	"repository": {
 		"type": "git",
