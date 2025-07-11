@@ -1,9 +1,9 @@
 # 🗝️ ssh-keygen
 
-[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/install/scrocker.ssh-keygen)](https://marketplace.visualstudio.com/items?itemName=scrocker.ssh-keygen)
+[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/i/scrocker.ssh-keygen)](https://marketplace.visualstudio.com/items?itemName=scrocker.ssh-keygen)
 [![Version](https://img.shields.io/visual-studio-marketplace/v/scrocker.ssh-keygen)](https://marketplace.visualstudio.com/items?itemName=scrocker.ssh-keygen)
-[![Rating](https://img.shields.io/visual-studio-marketplace/stars/scrocker.ssh-keygen)](https://marketplace.visualstudio.com/items?itemName=scrocker.ssh-keygen)
-[![License](https://img.shields.io/github/license/Stevencrocker/ssh-keygen)](https://github.com/Stevencrocker/ssh-keygen/blob/main/LICENSE)
+[![Rating](https://img.shields.io/visual-studio-marketplace/r/scrocker.ssh-keygen)](https://marketplace.visualstudio.com/items?itemName=scrocker.ssh-keygen)
+[![License](https://img.shields.io/github/license/StevenCrocker/ssh-keygen)](https://github.com/StevenCrocker/ssh-keygen/blob/main/LICENSE)
 [![Buy Me a Coffee](https://img.shields.io/badge/☕-Buy%20Me%20a%20Coffee-orange)](https://buymeacoffee.com/scrocker)
 
 ---
