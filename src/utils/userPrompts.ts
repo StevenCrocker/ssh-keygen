@@ -109,3 +109,52 @@ export async function askToCopyToClipboard(): Promise<boolean | null> {
 
 	return answer === 'Yes';
 }
+
+export async function promptForPassphrase(): Promise<string | null> {
+	const passphrase = await vscode.window.showInputBox({
+		prompt: 'Enter passphrase for SSH key (leave empty for no passphrase)',
+		ignoreFocusOut: true,
+		password: true,
+		value: ''
+	});
+
+	// Return null if user cancelled, empty string if they want no passphrase
+	return passphrase !== undefined ? passphrase : null;
+}
+
+export async function promptForPassphraseStorage(): Promise<'plaintext' | 'prompt' | null> {
+	const choice = await vscode.window.showQuickPick(
+		[
+			{ label: 'Store as plaintext in sftp.json', description: 'Convenient but less secure', value: 'plaintext' },
+			{ label: 'Prompt for passphrase on connect', description: 'More secure but requires input each time', value: 'prompt' }
+		],
+		{
+			placeHolder: 'How would you like to handle the passphrase in sftp.json?',
+			ignoreFocusOut: true
+		}
+	);
+
+	return choice ? (choice.value as 'plaintext' | 'prompt') : null;
+}
+
+export async function promptForCurrentPassphrase(): Promise<string | null> {
+	const passphrase = await vscode.window.showInputBox({
+		prompt: 'Enter current passphrase to verify',
+		ignoreFocusOut: true,
+		password: true,
+		value: ''
+	});
+
+	return passphrase !== undefined ? passphrase : null;
+}
+
+export async function promptForNewPassphrase(): Promise<string | null> {
+	const passphrase = await vscode.window.showInputBox({
+		prompt: 'Enter new passphrase (leave empty to remove passphrase)',
+		ignoreFocusOut: true,
+		password: true,
+		value: ''
+	});
+
+	return passphrase !== undefined ? passphrase : null;
+}

@@ -16,7 +16,7 @@ A simple, friendly VS Code extension to generate SSH key pairs in your workspace
 
 ## 🚀 Features
 
-- ✅ **Three intelligent commands** to fit any workflow
+- ✅ **Four intelligent commands** to fit any workflow
 - ✅ Generate **ed25519** (recommended) or **RSA** (2048/4096) keys
 - ✅ **Consistent naming**: `{hostname}-{username}-{keytype}` format for organization
 - ✅ **Smart validation** that skips key generation if valid keys already exist
@@ -43,7 +43,7 @@ SSH Key Generator by scrocker
 ## 🅥 Usage
 
 1. Open the **Command Palette** (`Ctrl+Shift+P` or `Cmd+Shift+P`).
-2. Choose one of three commands based on your needs:
+2. Choose one of four commands based on your needs:
 
 ### 🔧 **Complete Setup** (Recommended for new projects)
 
@@ -78,6 +78,18 @@ SSH Key Generator by scrocker
 - **Validates key pairs** and shows status in selection list
 - **Only prompts for missing information** (usually just remote path)
 - Perfect when you already have keys or want to reconfigure
+
+### 🔐 **Passphrase Management** (For existing keys)
+
+```
+> SSHKEYGEN: Add/Update Passphrase for Existing Keys
+```
+
+- **Discovers existing SSH keys** in your workspace
+- **Add, change, or remove passphrases** on existing keys
+- **Choose storage method**: store in config (plaintext) or prompt on each connection
+- **Automatically updates SFTP configuration** to match passphrase settings
+- Perfect for enhancing security or changing authentication methods
 
 3. Follow the prompts and optionally copy your public key to clipboard when done!
 

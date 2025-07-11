@@ -6,6 +6,7 @@ export interface SftpConfig {
 	username?: string;
 	remotePath?: string;
 	privateKeyPath?: string;
+	passphrase?: string | boolean;
 	protocol?: string;
 	port?: number;
 	uploadOnSave?: boolean;
@@ -39,8 +40,8 @@ export function readSftpConfig(sftpConfigPath: string): { configs: SftpConfig[];
 	}
 }
 
-export function createDefaultSftpConfig(host: string, username: string, remotePath: string, privateKeyFile: string): SftpConfig {
-	return {
+export function createDefaultSftpConfig(host: string, username: string, remotePath: string, privateKeyFile: string, passphraseOption?: 'plaintext' | 'prompt' | 'remove', passphrase?: string): SftpConfig {
+	const config: SftpConfig = {
 		name: host,
 		host: host,
 		username: username,
@@ -51,32 +52,62 @@ export function createDefaultSftpConfig(host: string, username: string, remotePa
 		uploadOnSave: false,
 		ignore: ['**/.vscode', '**/.cache', '**/.git', '**/.gitignore', '**/.env*', '**/.DS_Store', '**/*.md', '**/node_modules', '**/package-lock.json', '**/package.json', '**/yarn.lock', '**/webpack.config.js', '**/webpack.entry.js', '**/.babelrc', '**/tsconfig.json', '**/.eslintrc*', '**/.prettierrc*']
 	};
+
+	// Handle passphrase based on storage option
+	if (passphraseOption === 'plaintext' && passphrase && passphrase.trim() !== '') {
+		config.passphrase = passphrase;
+	} else if (passphraseOption === 'prompt') {
+		config.passphrase = true; // Set to true to prompt for passphrase
+	}
+	// For 'remove' option, we simply don't set the passphrase property (same as default behavior)
+
+	return config;
 }
 
-export function updateSftpConfig(config: SftpConfig, host: string, username: string, remotePath: string, privateKeyFile: string): SftpConfig {
+export function updateSftpConfig(config: SftpConfig, host: string, username: string, remotePath: string, privateKeyFile: string, passphraseOption?: 'plaintext' | 'prompt' | 'remove', passphrase?: string): SftpConfig {
+	// Create a new config object to avoid mutating the original
+	const newConfig: SftpConfig = { ...config };
+
 	// Set the name if it doesn't exist (use host as default)
-	if (!config.name) {
-		config.name = host;
+	if (!newConfig.name) {
+		newConfig.name = host;
 	}
 
-	config.host = host;
-	config.username = username;
-	config.remotePath = remotePath;
-	config.privateKeyPath = `./.vscode/${privateKeyFile}`;
-	config.protocol = 'sftp';
-	config.port = 22;
+	newConfig.host = host;
+	newConfig.username = username;
+	newConfig.remotePath = remotePath;
+	newConfig.privateKeyPath = `./.vscode/${privateKeyFile}`;
+	newConfig.protocol = 'sftp';
+	newConfig.port = 22;
+
+	// Handle passphrase based on storage option
+	if (passphraseOption === 'plaintext' && passphrase && passphrase.trim() !== '') {
+		newConfig.passphrase = passphrase;
+	} else if (passphraseOption === 'prompt') {
+		newConfig.passphrase = true; // Set to true to prompt for passphrase
+	} else if (passphraseOption === 'remove') {
+		// Explicit signal to remove passphrase
+		delete newConfig.passphrase;
+	} else if (passphraseOption === 'plaintext' && (!passphrase || passphrase.trim() === '')) {
+		// If plaintext option with empty passphrase, remove the field
+		delete newConfig.passphrase;
+	} else if (passphraseOption === undefined && passphrase === '') {
+		// If no passphrase option specified and passphrase is empty, remove it
+		delete newConfig.passphrase;
+	}
+	// If passphraseOption is undefined, preserve existing passphrase setting
 
 	// Set uploadOnSave to false if it doesn't exist
-	if (config.uploadOnSave === undefined) {
-		config.uploadOnSave = false;
+	if (newConfig.uploadOnSave === undefined) {
+		newConfig.uploadOnSave = false;
 	}
 
 	// Add ignore patterns if they don't exist
-	if (!config.ignore) {
-		config.ignore = ['**/.vscode', '**/.cache', '**/.git', '**/.gitignore', '**/.env*', '**/.DS_Store', '**/*.md', '**/node_modules', '**/package-lock.json', '**/package.json', '**/yarn.lock', '**/webpack.config.js', '**/webpack.entry.js', '**/.babelrc', '**/tsconfig.json', '**/.eslintrc*', '**/.prettierrc*'];
+	if (!newConfig.ignore) {
+		newConfig.ignore = ['**/.vscode', '**/.cache', '**/.git', '**/.gitignore', '**/.env*', '**/.DS_Store', '**/*.md', '**/node_modules', '**/package-lock.json', '**/package.json', '**/yarn.lock', '**/webpack.config.js', '**/webpack.entry.js', '**/.babelrc', '**/tsconfig.json', '**/.eslintrc*', '**/.prettierrc*'];
 	}
 
-	return config;
+	return newConfig;
 }
 
 export function writeSftpConfig(sftpConfigPath: string, configs: SftpConfig[], isArray: boolean, configIndex: number, updatedConfig: SftpConfig): void {
@@ -84,7 +115,8 @@ export function writeSftpConfig(sftpConfigPath: string, configs: SftpConfig[], i
 
 	if (isArray) {
 		if (configs.length > 0) {
-			configs[configIndex] = { ...configs[configIndex], ...updatedConfig };
+			// Simply replace the config at the specified index
+			configs[configIndex] = updatedConfig;
 		} else {
 			configs.push(updatedConfig);
 		}

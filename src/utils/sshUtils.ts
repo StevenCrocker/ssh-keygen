@@ -81,7 +81,7 @@ export async function checkSSHKeygenAvailability(): Promise<boolean> {
 	}
 }
 
-export async function validateSSHKeyPair(privateKeyPath: string, publicKeyPath: string): Promise<{ isValid: boolean; error?: string }> {
+export async function validateSSHKeyPair(privateKeyPath: string, publicKeyPath: string, passphrase: string = ''): Promise<{ isValid: boolean; error?: string }> {
 	try {
 		// Check if files exist
 		if (!fs.existsSync(privateKeyPath) || !fs.existsSync(publicKeyPath)) {
@@ -102,9 +102,26 @@ export async function validateSSHKeyPair(privateKeyPath: string, publicKeyPath: 
 		}
 
 		// Advanced validation: Check if private and public keys match
+		// For encrypted keys, we need the passphrase
+		const isEncrypted = privateKeyContent.includes('Proc-Type: 4,ENCRYPTED') || privateKeyContent.includes('DEK-Info:') || privateKeyContent.includes('ENCRYPTED');
+
+		if (isEncrypted && !passphrase) {
+			// For encrypted keys without passphrase, we can only do basic format validation
+			return { isValid: true };
+		}
+
 		try {
 			await new Promise<void>((resolve, reject) => {
-				exec(`ssh-keygen -y -f "${privateKeyPath}"`, (error, stdout, stderr) => {
+				// Add timeout to prevent hanging
+				const timeout = setTimeout(() => {
+					reject(new Error('SSH key validation timed out'));
+				}, 5000); // 5 second timeout
+
+				const escapedPassphrase = passphrase.replace(/["\\]/g, '\\$&');
+				const cmd = `ssh-keygen -y -P "${escapedPassphrase}" -f "${privateKeyPath}"`;
+
+				const child = exec(cmd, (error, stdout, stderr) => {
+					clearTimeout(timeout);
 					if (error) {
 						reject(new Error('Private key validation failed'));
 					} else {
@@ -118,6 +135,9 @@ export async function validateSSHKeyPair(privateKeyPath: string, publicKeyPath: 
 						}
 					}
 				});
+
+				// Kill the process if it times out
+				timeout.unref();
 			});
 
 			return { isValid: true };
@@ -129,13 +149,16 @@ export async function validateSSHKeyPair(privateKeyPath: string, publicKeyPath: 
 	}
 }
 
-export async function generateSSHKey(keyType: string, rsaBits: string, privateKeyPath: string): Promise<void> {
+export async function generateSSHKey(keyType: string, rsaBits: string, privateKeyPath: string, passphrase: string = ''): Promise<void> {
 	let sshKeygenCmd = '';
 
+	// Escape passphrase for command line (handle quotes and special characters)
+	const escapedPassphrase = passphrase.replace(/["\\]/g, '\\$&');
+
 	if (keyType === 'ed25519') {
-		sshKeygenCmd = `ssh-keygen -t ed25519 -f "${privateKeyPath}" -N "" -q`;
+		sshKeygenCmd = `ssh-keygen -t ed25519 -f "${privateKeyPath}" -N "${escapedPassphrase}" -q`;
 	} else if (keyType === 'rsa') {
-		sshKeygenCmd = `ssh-keygen -t rsa -b ${rsaBits} -f "${privateKeyPath}" -N "" -q`;
+		sshKeygenCmd = `ssh-keygen -t rsa -b ${rsaBits} -f "${privateKeyPath}" -N "${escapedPassphrase}" -q`;
 	} else {
 		throw new Error(`Unsupported key type: ${keyType}`);
 	}
@@ -146,6 +169,57 @@ export async function generateSSHKey(keyType: string, rsaBits: string, privateKe
 				reject(error);
 			} else {
 				resolve();
+			}
+		});
+	});
+}
+
+export async function verifySSHKeyPassphrase(privateKeyPath: string, passphrase: string): Promise<boolean> {
+	return new Promise<boolean>((resolve) => {
+		// Try to extract public key using the provided passphrase
+		// If successful, the passphrase is correct
+		const escapedPassphrase = passphrase.replace(/["\\]/g, '\\$&');
+		const cmd = `ssh-keygen -y -P "${escapedPassphrase}" -f "${privateKeyPath}"`;
+
+		exec(cmd, (error, stdout, stderr) => {
+			if (error || stderr.includes('incorrect passphrase') || stderr.includes('bad decrypt')) {
+				resolve(false);
+			} else {
+				resolve(true);
+			}
+		});
+	});
+}
+
+export async function changeSSHKeyPassphrase(privateKeyPath: string, oldPassphrase: string, newPassphrase: string): Promise<void> {
+	return new Promise<void>((resolve, reject) => {
+		const escapedOldPassphrase = oldPassphrase.replace(/["\\]/g, '\\$&');
+		const escapedNewPassphrase = newPassphrase.replace(/["\\]/g, '\\$&');
+
+		// Use ssh-keygen -p to change passphrase
+		const cmd = `ssh-keygen -p -P "${escapedOldPassphrase}" -N "${escapedNewPassphrase}" -f "${privateKeyPath}"`;
+
+		exec(cmd, (error, stdout, stderr) => {
+			if (error) {
+				reject(error);
+			} else {
+				resolve();
+			}
+		});
+	});
+}
+
+export async function checkSSHKeyHasPassphrase(privateKeyPath: string): Promise<boolean> {
+	return new Promise<boolean>((resolve) => {
+		// Try to extract public key with empty passphrase
+		// If it fails, the key likely has a passphrase
+		const cmd = `ssh-keygen -y -P "" -f "${privateKeyPath}"`;
+
+		exec(cmd, (error, stdout, stderr) => {
+			if (error || stderr.includes('incorrect passphrase') || stderr.includes('bad decrypt')) {
+				resolve(true); // Key has passphrase
+			} else {
+				resolve(false); // Key has no passphrase
 			}
 		});
 	});

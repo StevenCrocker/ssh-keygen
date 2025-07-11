@@ -2,7 +2,27 @@
 
 All notable changes to the "ssh-keygen" extension will be documented in this file.
 
-## [0.0.1] - 2025-07-11
+## [1.1.0] - 2025-07-11
+
+### Added
+
+- **New command: Add/Update Passphrase for Existing Keys** - Easily modify passphrases on existing SSH keys
+- **Enhanced passphrase management** - Choose between storing passphrases in plaintext or prompting on each connection
+- **Improved key discovery** - Better detection and validation of existing SSH keys with automatic passphrase detection
+- **Smart SFTP configuration updates** - Automatically syncs passphrase settings between SSH keys and SFTP configs
+
+### Enhanced
+
+- **Four distinct commands for complete SSH key lifecycle management:**
+  - `SSHKEYGEN: Generate SSH Key Pair & Create or Update SFTP Config` - Complete workflow for new setups
+  - `SSHKEYGEN: Generate SSH Key Pair Only` - Generate keys without SFTP configuration
+  - `SSHKEYGEN: Create or Update SFTP Config Only` - Smart discovery of existing keys
+  - `SSHKEYGEN: Add/Update Passphrase for Existing Keys` - Manage passphrases on existing keys
+- Key validation process with automatic retry logic for passphrase-protected keys
+- SFTP configuration management with proper passphrase property handling
+- User experience with clearer messaging and better error handling
+
+## [1.0.0] - 2025-07-11
 
 ### Added
 
